@@ -4,13 +4,14 @@
 * *Pseudocode (HMAC Verification):*
 
 pseudocode
+```
 function verifyPayload(payload, receivedSignature, secretKey):
   calculatedSignature = HMAC-SHA256(payload, secretKey)
   if calculatedSignature == receivedSignature:
     return true
   else:
     return false
-
+```
 
 * *Explanation:*
     * This pseudocode shows how to verify the integrity of a sensor payload using HMAC.
@@ -23,6 +24,7 @@ function verifyPayload(payload, receivedSignature, secretKey):
 * *Pseudocode (Simple Standard Deviation Anomaly Detection):*
 
 pseudocode
+```
 function detectAnomaly(sensorValues, threshold):
   mean = calculateMean(sensorValues)
   stdDev = calculateStandardDeviation(sensorValues)
@@ -31,7 +33,7 @@ function detectAnomaly(sensorValues, threshold):
     if abs(value - mean) > threshold * stdDev:
       return true, value # Anomaly detected
   return false, null # No anomaly
-
+```
 
 * *Explanation:*
     * This pseudocode demonstrates a basic anomaly detection method using standard deviation.
@@ -44,13 +46,14 @@ function detectAnomaly(sensorValues, threshold):
 * *Pseudocode (Checksum Verification):*
 
 pseudocode
+```
 function verifyChecksum(data, storedChecksum):
   calculatedChecksum = SHA256(data)
   if calculatedChecksum == storedChecksum:
     return true
   else:
     return false
-
+```
 
 * *Explanation:*
     * This shows a simple checksum verification. If the stored checksum and the newly calculated checksum do not match, then the data has been altered.
@@ -61,6 +64,7 @@ function verifyChecksum(data, storedChecksum):
 * *Pseudocode (Token Bucket):*
 
 pseudocode
+```
 function allowRequest(client, rateLimit, bucket):
   currentTimestamp = getCurrentTimestamp()
   tokensToAdd = (currentTimestamp - bucket.lastRefill) * rateLimit
@@ -72,7 +76,7 @@ function allowRequest(client, rateLimit, bucket):
     return true
   else:
     return false
-
+```
 
 * *Explanation:*
     * This pseudocode demonstrates a basic token bucket algorithm.
