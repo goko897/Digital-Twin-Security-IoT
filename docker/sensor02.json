@@ -1,0 +1,18 @@
+{
+    "policyId": "my.test:policy",
+    "attributes": {
+        "manufacturer": "Well known sensors producer",
+        "serial number": "200",
+        "location": "First floor"
+    },
+    "features": {
+        "measurements": {
+            "properties": {
+                "numberplate": 0,
+                "number": 0,
+                "state": 0,
+                "time": 0
+            }
+        }
+    }
+}

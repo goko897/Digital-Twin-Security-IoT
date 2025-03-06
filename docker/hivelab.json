@@ -1,0 +1,23 @@
+{
+    "policyId": "my.test:policy",
+    "attributes": {
+        "name": "HiveMQ Sensor Lab",
+        "type": "Rasberry Pi"
+    },
+    "features": {
+        "sensor01": {
+            "properties": {
+                "temperature": 0,
+                "humidity": 0
+            }
+        },
+        "sensor02": {
+            "properties": {
+                "numberplate": 0,
+                "number": 0,
+                "state": 0,
+                "time": 0
+            }
+        }
+    }
+}
