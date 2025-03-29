@@ -1,0 +1,39 @@
+{
+    "policyId": "my.test:policy",
+    "attributes": {
+        "name": "HiveMQ Sensor Lab",
+        "type": "Raspberry Pi",
+        "firmware_version": "1.0.0",
+        "last_update": "2025-03-29T12:00:00Z"
+    },
+    "features": {
+        "sensor01": {
+            "properties": {
+                "temperature": 0,
+                "humidity": 0
+            }
+        },
+        "sensor02": {
+            "properties": {
+                "numberplate": 0,
+                "number": 0,
+                "state": 0,
+                "time": 0
+            }
+        },
+        "firmware": {
+            "properties": {
+                "binary_received": true,
+                "binary_size": 1024000,
+                "binary_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "analysis_status": "pending",
+                "fact_analysis_id": "",
+                "last_analyzed": "",
+                "analysis_url": "",
+                "firmware_type": "kernel",
+                "device_type": "raspberry-pi",
+                "upload_timestamp": "2025-03-29T12:00:00Z"
+            }
+        }
+    }
+}
