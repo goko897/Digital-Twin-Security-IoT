@@ -1,0 +1,315 @@
+version: '3.8'
+
+services:
+  # ---------------------------
+  # Eclipse Ditto Stack (File 1)
+  # ---------------------------
+  hivemq:
+    image: hivemq/hivemq4
+    mem_limit: 1024m
+    restart: always
+    networks: 
+      shared-net:
+        aliases:
+          - hivemq
+    ports:
+      - 8181:8080
+      - 1883:1883
+      
+  mongodb:
+    image: docker.io/mongo:7.0
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+    restart: always
+    networks:
+      shared-net:
+        aliases:
+          - mongodb
+    command: mongod --storageEngine wiredTiger --noscripting
+    user: mongodb
+    ports:
+      - 27017:27017
+    environment:
+      TZ: Europe/Berlin
+    logging:
+      options:
+        max-size: 50m
+
+
+  policies:
+    image: docker.io/eclipse/ditto-policies:${DITTO_VERSION:-latest}
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    restart: always
+    networks:
+      shared-net:
+        aliases:
+          - ditto-cluster
+    environment:
+      - TZ=Europe/Berlin
+      - BIND_HOSTNAME=0.0.0.0
+      - JAVA_TOOL_OPTIONS=-XX:ActiveProcessorCount=2 -XX:+ExitOnOutOfMemoryError -XX:+UseContainerSupport -XX:+UseStringDeduplication -Xss512k -XX:MaxRAMPercentage=50 -XX:+UseG1GC -XX:MaxGCPauseMillis=150 -Dpekko.coordinated-shutdown.exit-jvm=on -Dpekko.cluster.shutdown-after-unsuccessful-join-seed-nodes=180s -Dpekko.cluster.failure-detector.threshold=15.0 -Dpekko.cluster.failure-detector.expected-response-after=10s -Dpekko.cluster.failure-detector.acceptable-heartbeat-pause=20s -Dpekko.cluster.downing-provider-class=
+      - MONGO_DB_HOSTNAME=mongodb
+    healthcheck:
+      test: curl --fail "$(hostname)":7626/alive || exit 1
+      interval: 30s
+      timeout: 15s
+      retries: 4
+      start_period: 120s
+    logging:
+      options:
+        max-size: 50m
+
+  things:
+    image: docker.io/eclipse/ditto-things:${DITTO_VERSION:-latest}
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    restart: always
+    networks:
+      shared-net:
+        aliases:
+          - ditto-cluster
+    depends_on:
+      - policies
+    environment:
+      - TZ=Europe/Berlin
+      - BIND_HOSTNAME=0.0.0.0
+      - JAVA_TOOL_OPTIONS=-XX:ActiveProcessorCount=2 -XX:+ExitOnOutOfMemoryError -XX:+UseContainerSupport -XX:+UseStringDeduplication -Xss512k -XX:MaxRAMPercentage=50 -XX:+UseG1GC -XX:MaxGCPauseMillis=150 -Dpekko.coordinated-shutdown.exit-jvm=on -Dpekko.cluster.shutdown-after-unsuccessful-join-seed-nodes=180s -Dpekko.cluster.failure-detector.threshold=15.0 -Dpekko.cluster.failure-detector.expected-response-after=10s -Dpekko.cluster.failure-detector.acceptable-heartbeat-pause=20s -Dpekko.cluster.downing-provider-class=
+      - MONGO_DB_HOSTNAME=mongodb
+    healthcheck:
+      test: curl --fail "$(hostname)":7626/alive || exit 1
+      interval: 30s
+      timeout: 15s
+      retries: 4
+      start_period: 120s
+    logging:
+      options:
+        max-size: 50m
+
+  things-search:
+    image: docker.io/eclipse/ditto-things-search:${DITTO_VERSION:-latest}
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    restart: always
+    networks:
+      shared-net:
+        aliases:
+          - ditto-cluster
+    depends_on:
+      - policies
+    environment:
+      - TZ=Europe/Berlin
+      - BIND_HOSTNAME=0.0.0.0
+      - JAVA_TOOL_OPTIONS=-XX:ActiveProcessorCount=2 -XX:+ExitOnOutOfMemoryError -XX:+UseContainerSupport -XX:+UseStringDeduplication -Xss512k -XX:MaxRAMPercentage=50 -XX:+UseG1GC -XX:MaxGCPauseMillis=150 -Dpekko.coordinated-shutdown.exit-jvm=on -Dpekko.cluster.shutdown-after-unsuccessful-join-seed-nodes=180s -Dpekko.cluster.failure-detector.threshold=15.0 -Dpekko.cluster.failure-detector.expected-response-after=10s -Dpekko.cluster.failure-detector.acceptable-heartbeat-pause=20s -Dpekko.cluster.downing-provider-class=
+      - MONGO_DB_HOSTNAME=mongodb
+    healthcheck:
+      test: curl --fail "$(hostname)":7626/alive || exit 1
+      interval: 30s
+      timeout: 15s
+      retries: 4
+      start_period: 120s
+    logging:
+      options:
+        max-size: 50m
+
+  connectivity:
+    image: docker.io/eclipse/ditto-connectivity:${DITTO_VERSION:-latest}
+    deploy:
+      resources:
+        limits:
+          memory: 768m
+    restart: always
+    networks:
+      shared-net:
+        aliases:
+          - ditto-cluster
+    depends_on:
+      - policies
+    environment:
+      - TZ=Europe/Berlin
+      - BIND_HOSTNAME=0.0.0.0
+      - JAVA_TOOL_OPTIONS=-XX:ActiveProcessorCount=2 -XX:+ExitOnOutOfMemoryError -XX:+UseContainerSupport -XX:+UseStringDeduplication -Xss512k -XX:MaxRAMPercentage=50 -XX:+UseG1GC -XX:MaxGCPauseMillis=150 -Dpekko.coordinated-shutdown.exit-jvm=on -Dpekko.cluster.shutdown-after-unsuccessful-join-seed-nodes=180s -Dpekko.cluster.failure-detector.threshold=15.0 -Dpekko.cluster.failure-detector.expected-response-after=10s -Dpekko.cluster.failure-detector.acceptable-heartbeat-pause=20s -Dpekko.cluster.downing-provider-class=
+      - MONGO_DB_HOSTNAME=mongodb
+    healthcheck:
+      test: curl --fail "$(hostname)":7626/alive || exit 1
+      interval: 30s
+      timeout: 15s
+      retries: 4
+      start_period: 120s
+    logging:
+      options:
+        max-size: 50m
+
+  gateway:
+    image: docker.io/eclipse/ditto-gateway:${DITTO_VERSION:-latest}
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    restart: always
+    networks:
+      shared-net:
+        aliases:
+          - ditto-cluster
+    depends_on:
+      - policies
+    ports:
+      - "8081:8080"
+    environment:
+      - TZ=Europe/Berlin
+      - BIND_HOSTNAME=0.0.0.0
+      - ENABLE_PRE_AUTHENTICATION=true
+      - JAVA_TOOL_OPTIONS=-XX:ActiveProcessorCount=2 -XX:+ExitOnOutOfMemoryError -XX:+UseContainerSupport -XX:+UseStringDeduplication -Xss512k -XX:MaxRAMPercentage=50 -XX:+UseG1GC -XX:MaxGCPauseMillis=150 -Dpekko.coordinated-shutdown.exit-jvm=on -Dpekko.cluster.shutdown-after-unsuccessful-join-seed-nodes=180s -Dpekko.cluster.failure-detector.threshold=15.0 -Dpekko.cluster.failure-detector.expected-response-after=10s -Dpekko.cluster.failure-detector.acceptable-heartbeat-pause=20s -Dpekko.cluster.downing-provider-class=
+    healthcheck:
+      test: curl --fail "$(hostname)":7626/alive || exit 1
+      interval: 30s
+      timeout: 15s
+      retries: 4
+      start_period: 120s
+    logging:
+      options:
+        max-size: 50m
+
+  ditto-ui:
+    image: docker.io/eclipse/ditto-ui:${DITTO_VERSION:-latest}
+    deploy:
+      resources:
+        limits:
+          memory: 32m
+    restart: always
+    networks:
+      shared-net: {}
+    logging:
+      options:
+        max-size: 10m
+
+  swagger-ui:
+    image: docker.io/swaggerapi/swagger-ui:v5.9.1
+    deploy:
+      resources:
+        limits:
+          memory: 32m
+    restart: always
+    networks:
+      shared-net: {}
+    environment:
+      - QUERY_CONFIG_ENABLED=true
+    volumes:
+      - ../../documentation/src/main/resources/openapi:/usr/share/nginx/html/openapi:ro
+      - ../../documentation/src/main/resources/images:/usr/share/nginx/html/images:ro
+      - ./swagger3-index.html:/usr/share/nginx/html/index.html:ro
+    command: nginx -g 'daemon off;'
+    logging:
+      options:
+        max-size: 10m
+
+  nginx:
+    image: docker.io/nginx:1.27-alpine
+    deploy:
+      resources:
+        limits:
+          memory: 32m
+    restart: always
+    networks:
+      shared-net: {}
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.htpasswd:/etc/nginx/nginx.htpasswd:ro
+      - ./nginx-cors.conf:/etc/nginx/nginx-cors.conf:ro
+      - ./mime.types:/etc/nginx/mime.types:ro
+      - ./index.html:/etc/nginx/html/index.html:ro
+      - ../../documentation/src/main/resources/images:/etc/nginx/html/images:ro
+      - ../../documentation/src/main/resources/wot:/etc/nginx/html/wot:ro
+    ports:
+      - "${DITTO_EXTERNAL_PORT:-8080}:80"
+    depends_on:
+      - gateway
+      - swagger-ui
+    logging:
+      options:
+        max-size: 10m
+
+  # -----------------------------------------------------
+  # Security Scanning, SIEM, and Network Analysis (File 2)
+  # -----------------------------------------------------
+      
+  prometheus:
+    image: docker.io/prom/prometheus:latest
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - policies
+      - things
+      - things-search
+      - connectivity
+      - gateway
+    logging:
+      options:
+        max-size: 50m
+
+  grafana:
+    image: docker.io/grafana/grafana:latest
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-dashboards:/etc/grafana/dashboards
+      - ./grafana-datasources:/etc/grafana/provisioning/datasources
+      - ./grafana-dashboards/dashboard.yml:/etc/grafana/dashboards/dashboard.yml
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_DASHBOARDS_PROVISIONING_ENABLED=true
+    depends_on:
+      - prometheus
+    logging:
+      options:
+        max-size: 50m
+
+
+networks:
+  shared-net:
+    driver: bridge
+
+volumes:
+  openvas-data:
+  firmware-uploads:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  elastic-data:
+  suricata-logs:
+  ditto_log_files:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/log/ditto
+      o: bind,uid=1000,gid=1000
